@@ -1899,7 +1899,7 @@ class TestCov:
     frequencies = np.array([1, 4, 1])
     x2_repeats = np.array([[0.0], [1.0], [1.0], [1.0], [1.0], [2.0]]).T
     res2 = np.array([[0.4, -0.4], [-0.4, 0.4]])
-    unit_frequencies = np.ones(3, dtype=np.integer)
+    unit_frequencies = np.ones(3, dtype=np.int_)
     weights = np.array([1.0, 4.0, 1.0])
     res3 = np.array([[2. / 3., -2. / 3.], [-2. / 3., 2. / 3.]])
     unit_weights = np.ones(3)
@@ -1952,11 +1952,11 @@ class TestCov:
                         self.res1)
         nonint = self.frequencies + 0.5
         assert_raises(TypeError, cov, self.x1, fweights=nonint)
-        f = np.ones((2, 3), dtype=np.integer)
+        f = np.ones((2, 3), dtype=np.int_)
         assert_raises(RuntimeError, cov, self.x1, fweights=f)
-        f = np.ones(2, dtype=np.integer)
+        f = np.ones(2, dtype=np.int_)
         assert_raises(RuntimeError, cov, self.x1, fweights=f)
-        f = -1 * np.ones(3, dtype=np.integer)
+        f = -1 * np.ones(3, dtype=np.int_)
         assert_raises(ValueError, cov, self.x1, fweights=f)
 
     def test_aweights(self):
@@ -2966,6 +2966,16 @@ class TestQuantile:
         assert_equal(np.quantile(x, 0), 0.)
         assert_equal(np.quantile(x, 1), 3.5)
         assert_equal(np.quantile(x, 0.5), 1.75)
+
+    def test_correct_quantile_value(self):
+        a = np.array([True])
+        tf_quant = np.quantile(True, False)
+        assert_equal(tf_quant, a[0])
+        assert_equal(type(tf_quant), a.dtype)
+        a = np.array([False, True, True])
+        quant_res = np.quantile(a, a)
+        assert_array_equal(quant_res, a)
+        assert_equal(a.dtype, quant_res.dtype)
 
     def test_fraction(self):
         # fractional input, integral quantile
